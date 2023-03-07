@@ -5,7 +5,7 @@ It will simulate the bevaiour of the users and keep given number of active dialo
 
 ## Install
 
-Git clone the repo and run the following commands:
+Git clone the repo and run the following commands to install the dependencies:
 
 ```
 cd stress_test
@@ -15,11 +15,11 @@ npm i
 ## Run the stress test
 
 ```
-npm i [<url_base>=http://localhost] [<active_dialogs_count> = 2]
+node index.js [<url_base>=http://localhost] [<active_dialogs_count> = 2]
 ```
 
 Example:
 
 ```
-npm i https://odyssey.org 5
+node index.js https://odyssey.org 5
 ```
