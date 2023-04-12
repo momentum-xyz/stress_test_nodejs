@@ -6,11 +6,9 @@ const argv = process.argv.slice(2);
 const URL_BASE = argv[0] || 'http://https://dev2.odyssey.ninja/';
 const max_active_dialogs = parseInt(argv[1], 10) || 2;
 const max_count = parseInt(argv[2], 10) || 0;
-const initial_dialogs = parseInt(argv[3], 10) || 0;
 
 const shaper = Shaper.create({
   active_dialogs: max_active_dialogs,
-  initial_dialogs,
   callback_new: newDialog,
   // debug: true,
 });
@@ -18,7 +16,7 @@ const shaper = Shaper.create({
 let countThisSecond = 0,
   finishedThisSecond = 0,
   totalCount = 0,
-  activeDialogs = 0,
+  currentActiveDialogs = 0,
   errors = 0;
 
 setInterval(function () {
@@ -27,7 +25,7 @@ setInterval(function () {
     'NEW:',
     countThisSecond,
     'ACTIVE:',
-    activeDialogs,
+    currentActiveDialogs,
     'FINISHED:',
     finishedThisSecond,
     'ERRORS:',
@@ -51,7 +49,7 @@ function newDialog(cbDone, cbResp, cbReq) {
   console.log('Create new dialog');
   ++countThisSecond;
   ++totalCount;
-  ++activeDialogs;
+  ++currentActiveDialogs;
 
   if (max_count && totalCount >= max_count) {
     console.log('Max count reached');
@@ -317,7 +315,7 @@ function newDialog(cbDone, cbResp, cbReq) {
           cbDone();
 
           ++finishedThisSecond;
-          --activeDialogs;
+          --currentActiveDialogs;
         });
     })
     .catch((err) => {
@@ -326,8 +324,18 @@ function newDialog(cbDone, cbResp, cbReq) {
 
       ++errors;
       ++finishedThisSecond;
-      --activeDialogs;
+      --currentActiveDialogs;
     });
 }
 
-shaper.start();
+const secondsToReachMax = 10;
+const chunk = Math.ceil(max_active_dialogs / secondsToReachMax) || 1;
+
+shaper.start(chunk);
+const interval = setInterval(() => {
+  if (currentActiveDialogs >= max_active_dialogs) {
+    clearInterval(interval);
+    return;
+  }
+  shaper.start(chunk);
+}, 1000);
