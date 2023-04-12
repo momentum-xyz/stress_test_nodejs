@@ -3,7 +3,7 @@ const { Shaper } = require('loadtest_tools');
 
 const argv = process.argv.slice(2);
 
-const URL_BASE = argv[0] || 'http://https://v2.odyssey.ninja/';
+const URL_BASE = argv[0] || 'http://https://dev2.odyssey.ninja/';
 const active_dialogs = parseInt(argv[1], 10) || 2;
 
 const shaper = Shaper.create({
@@ -159,7 +159,7 @@ function newDialog(cbDone, cbResp, cbReq) {
           // wait 15 sec
           return promiseDelay(newsfeedDelayMsec).then(() => {
             cbReq();
-            return axios.get(URL_DEV2 + '/unity-assets/WebGL/catalog_3rdPersonAvatarController.hash', config);
+            return axios.get(URL_BASE + '/unity-assets/WebGL/catalog_3rdPersonAvatarController.hash', config);
           });
         })
         .then((resp) => {
@@ -171,7 +171,7 @@ function newDialog(cbDone, cbResp, cbReq) {
           // wait 15 sec
           return promiseDelay(newsfeedDelayMsec).then(() => {
             cbReq();
-            return axios.get(URL_DEV2 + '/unity-assets/WebGL/catalog_WorldCenter.hash', config);
+            return axios.get(URL_BASE + '/unity-assets/WebGL/catalog_WorldCenter.hash', config);
           });
         })
         .then((resp) => {
@@ -183,7 +183,31 @@ function newDialog(cbDone, cbResp, cbReq) {
           // wait 15 sec
           return promiseDelay(newsfeedDelayMsec).then(() => {
             cbReq();
-            return axios.get(URL_DEV2 + '/unity-assets/WebGL/catalog_DockingStation.hash', config);
+            return axios.get(URL_BASE + '/unity-assets/WebGL/catalog_DockingStation.hash', config);
+          });
+        })
+        .then((resp) => {
+          cbResp();
+          //console.log('UI client resp', resp.status, resp.statusText, resp.data);
+          console.log('new staking resp', resp.status, resp.statusText);
+          // console.log('UI client data', resp.data);
+
+          // wait 15 sec
+          return promiseDelay(newsfeedDelayMsec).then(() => {
+            cbReq();
+            return axios.get(URL_BASE + '/api/v4/objects/e7ccd418-1380-4766-8589-caf7ad45c32f/attributes/sub?plugin_id=f0f0f0f0-0f0f-4ff0-af0f-f0f0f0f0f0f0&attribute_name=name&sub_attribute_key=name', config);
+          });
+        })
+        .then((resp) => {
+          cbResp();
+          //console.log('UI client resp', resp.status, resp.statusText, resp.data);
+          console.log('new visit resp', resp.status, resp.statusText);
+          // console.log('UI client data', resp.data);
+
+          // wait 15 sec
+          return promiseDelay(newsfeedDelayMsec).then(() => {
+            cbReq();
+            return axios.get(URL_BASE + '/api/v3/render/texture/s8/26485e74acb29223ba7a9fa600d36c7f', config);
           });
         })
         .then((resp) => {
@@ -206,6 +230,8 @@ function newDialog(cbDone, cbResp, cbReq) {
             //https://dev2.odyssey.ninja/unity-assets/WebGL/catalog_DockingStation.hash
             //https://dev2.odyssey.ninja/unity-assets/WebGL/catalog_Skybox_QuantumFlux.hash
             //https://dev2.odyssey.ninja/unity-assets/WebGL/catalog_WorldEffects.hash
+            //https://dev2.odyssey.ninja/api/v3/render/texture/s8/26485e74acb29223ba7a9fa600d36c7f
+            //https://dev2.odyssey.ninja/api/v4/objects/e7ccd418-1380-4766-8589-caf7ad45c32f/attributes/sub?plugin_id=f0f0f0f0-0f0f-4ff0-af0f-f0f0f0f0f0f0&attribute_name=name&sub_attribute_key=name
           });
         })
       .then((resp) => {
