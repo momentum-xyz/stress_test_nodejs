@@ -15,7 +15,7 @@ npm i
 ## Run the stress test
 
 ```
-node index.js [<url_base>=http://localhost] [<active_dialogs_count> = 2]
+node index.js [<url_base>=http://localhost] [<active_dialogs_count> = 2] [<max_total_dialogs> = 0] [<max_initial_dialogs_numer>=1]
 ```
 
 Example:

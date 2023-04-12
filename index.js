@@ -4,18 +4,39 @@ const { Shaper } = require('loadtest_tools');
 const argv = process.argv.slice(2);
 
 const URL_BASE = argv[0] || 'http://https://dev2.odyssey.ninja/';
-const active_dialogs = parseInt(argv[1], 10) || 2;
+const max_active_dialogs = parseInt(argv[1], 10) || 2;
+const max_count = parseInt(argv[2], 10) || 0;
+const initial_dialogs = parseInt(argv[3], 10) || 0;
 
 const shaper = Shaper.create({
-  active_dialogs,
+  active_dialogs: max_active_dialogs,
+  initial_dialogs,
   callback_new: newDialog,
   // debug: true,
 });
 
-let countThisSecond = 0;
+let countThisSecond = 0,
+  finishedThisSecond = 0,
+  totalCount = 0,
+  activeDialogs = 0,
+  errors = 0;
+
 setInterval(function () {
-  console.log(countThisSecond + ' dialogs started this second');
+  console.log(
+    new Date().toISOString(),
+    'NEW:',
+    countThisSecond,
+    'ACTIVE:',
+    activeDialogs,
+    'FINISHED:',
+    finishedThisSecond,
+    'ERRORS:',
+    errors,
+    'TOTAL:',
+    totalCount
+  );
   countThisSecond = 0;
+  finishedThisSecond = 0;
 }, 1000);
 
 function promiseDelay(ms) {
@@ -29,6 +50,13 @@ const newsfeedDelayMsec = 1 * 1000;
 function newDialog(cbDone, cbResp, cbReq) {
   console.log('Create new dialog');
   ++countThisSecond;
+  ++totalCount;
+  ++activeDialogs;
+
+  if (max_count && totalCount >= max_count) {
+    console.log('Max count reached');
+    shaper.stop();
+  }
 
   axios
     .get(URL_BASE)
@@ -287,11 +315,18 @@ function newDialog(cbDone, cbResp, cbReq) {
 
           console.log('Close dialog');
           cbDone();
+
+          ++finishedThisSecond;
+          --activeDialogs;
         });
     })
     .catch((err) => {
       console.log(err);
       cbDone();
+
+      ++errors;
+      ++finishedThisSecond;
+      --activeDialogs;
     });
 }
 
