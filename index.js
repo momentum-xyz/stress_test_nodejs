@@ -6,6 +6,7 @@ const argv = process.argv.slice(2);
 const URL_BASE = argv[0] || 'http://https://dev2.odyssey.ninja/';
 const max_active_dialogs = parseInt(argv[1], 10) || 2;
 const max_count = parseInt(argv[2], 10) || 0;
+const debug = false;
 
 const shaper = Shaper.create({
   active_dialogs: max_active_dialogs,
@@ -13,8 +14,8 @@ const shaper = Shaper.create({
   // debug: true,
 });
 
-let countThisSecond = 0,
-  finishedThisSecond = 0,
+let newDialogsCreatedThisSecond = 0,
+  dialogsEndedThisSecond = 0,
   totalCount = 0,
   currentActiveDialogs = 0,
   errors = 0;
@@ -22,19 +23,19 @@ let countThisSecond = 0,
 setInterval(function () {
   console.log(
     new Date().toISOString(),
-    'NEW:',
-    countThisSecond,
+    'NEW:', // new dialogs created in this second
+    newDialogsCreatedThisSecond,
     'ACTIVE:',
     currentActiveDialogs,
-    'FINISHED:',
-    finishedThisSecond,
+    'FINISHED:', // dialogs destroyed this second
+    dialogsEndedThisSecond,
     'ERRORS:',
     errors,
     'TOTAL:',
     totalCount
   );
-  countThisSecond = 0;
-  finishedThisSecond = 0;
+  newDialogsCreatedThisSecond = 0;
+  dialogsEndedThisSecond = 0;
 }, 1000);
 
 function promiseDelay(ms) {
@@ -47,7 +48,7 @@ const newsfeedDelayMsec = 1 * 1000;
 
 function newDialog(cbDone, cbResp, cbReq) {
   console.log('Create new dialog');
-  ++countThisSecond;
+  ++newDialogsCreatedThisSecond;
   ++totalCount;
   ++currentActiveDialogs;
 
@@ -74,7 +75,7 @@ function newDialog(cbDone, cbResp, cbReq) {
     })
     .then((resp) => {
       cbResp();
-      console.log('Guest-token data', resp.data);
+      debug && console.log('Guest-token data', resp.data);
 
       // Authorized requests
       const token = resp.data.token;
@@ -89,7 +90,7 @@ function newDialog(cbDone, cbResp, cbReq) {
         .get(URL_BASE + '/api/v4/users/me', config)
         .then((resp) => {
           cbResp();
-          console.log('ME:', resp.data);
+          debug && console.log('ME:', resp.data);
 
           cbReq();
           return axios.get(URL_BASE + '/api/v4/newsfeed', config);
@@ -227,6 +228,63 @@ function newDialog(cbDone, cbResp, cbReq) {
           cbResp();
           //console.log('UI client resp', resp.status, resp.statusText, resp.data);
           console.log(
+            'final version falkor',
+            resp.status,
+            resp.statusText
+          );
+          // console.log('UI client data', resp.data);
+
+          // wait 15 sec
+          return promiseDelay(newsfeedDelayMsec).then(() => {
+            cbReq();
+            return axios.get(
+              URL_BASE + '/static/media/FINALFalkor.0a79ac4bc68822f0c77c.jpg',
+              config
+            );
+          });
+        })
+        .then((resp) => {
+          cbResp();
+          //console.log('UI client resp', resp.status, resp.statusText, resp.data);
+          console.log(
+            'final version circle',
+            resp.status,
+            resp.statusText
+          );
+          // console.log('UI client data', resp.data);
+
+          // wait 15 sec
+          return promiseDelay(newsfeedDelayMsec).then(() => {
+            cbReq();
+            return axios.get(
+              URL_BASE + '/explore/circle',
+              config
+            );
+          });
+        })
+        .then((resp) => {
+          cbResp();
+          //console.log('UI client resp', resp.status, resp.statusText, resp.data);
+          console.log(
+            'final version twirl',
+            resp.status,
+            resp.statusText
+          );
+          // console.log('UI client data', resp.data);
+
+          // wait 15 sec
+          return promiseDelay(newsfeedDelayMsec).then(() => {
+            cbReq();
+            return axios.get(
+              URL_BASE + '/explore/twirl',
+              config
+            );
+          });
+        })
+        .then((resp) => {
+          cbResp();
+          //console.log('UI client resp', resp.status, resp.statusText, resp.data);
+          console.log(
             'catalog_DockingStation resp',
             resp.status,
             resp.statusText
@@ -242,10 +300,10 @@ function newDialog(cbDone, cbResp, cbReq) {
             );
           });
         })
-        .then((resp) => {
+      .then((resp) => {
           cbResp();
           //console.log('UI client resp', resp.status, resp.statusText, resp.data);
-          console.log('new staking resp', resp.status, resp.statusText);
+          console.log('new staking resp', resp.config.url, resp.status, resp.statusText);
           // console.log('UI client data', resp.data);
 
           // wait 15 sec
@@ -257,11 +315,56 @@ function newDialog(cbDone, cbResp, cbReq) {
               config
             );
           });
-        })
+            })
+            .then((resp) => {
+              cbResp();
+             //console.log('UI client resp', resp.status, resp.statusText, resp.data);
+              console.log('new merge', resp.config.url, resp.status, resp.statusText);
+              // console.log('UI client data', resp.data);
+    
+              // wait 15 sec
+              return promiseDelay(newsfeedDelayMsec).then(() => {
+                cbReq();
+                return axios.get(
+                  'https://dev.odyssey.ninja/odyssey/merge07',
+                  config
+                );
+              });
+                  })
+                  .then((resp) => {
+                    cbResp();
+                   //console.log('UI client resp', resp.status, resp.statusText, resp.data);
+                    console.log('new dot texture', resp.config.url, resp.status, resp.statusText);
+                    // console.log('UI client data', resp.data);
+          
+                    // wait 15 sec
+                    return promiseDelay(newsfeedDelayMsec).then(() => {
+                      cbReq();
+                      return axios.get(
+                        'https://dev.odyssey.ninja/odyssey/dotTexture',
+                        config
+                      );
+                    });
+                        })
+                        .then((resp) => {
+                          cbResp();
+                         //console.log('UI client resp', resp.status, resp.statusText, resp.data);
+                          console.log('new smoke', resp.config.url, resp.status, resp.statusText);
+                          // console.log('UI client data', resp.data);
+                
+                          // wait 15 sec
+                          return promiseDelay(newsfeedDelayMsec).then(() => {
+                            cbReq();
+                            return axios.get(
+                              'https://dev.odyssey.ninja/odyssey/smoke',
+                              config
+                            );
+                          });
+                              })
         .then((resp) => {
           cbResp();
-          //console.log('UI client resp', resp.status, resp.statusText, resp.data);
-          console.log('new visit resp', resp.status, resp.statusText);
+         //console.log('UI client resp', resp.status, resp.statusText, resp.data);
+          console.log('new visit resp', resp.config.url, resp.status, resp.statusText);
           // console.log('UI client data', resp.data);
 
           // wait 15 sec
@@ -273,8 +376,8 @@ function newDialog(cbDone, cbResp, cbReq) {
               config
             );
           });
-        })
-        .then((resp) => {
+              })
+      .then((resp) => {
           cbResp();
           //console.log('profile client resp', resp.status, resp.statusText, resp.data);
           console.log('profile client resp', resp.status, resp.statusText);
@@ -291,6 +394,20 @@ function newDialog(cbDone, cbResp, cbReq) {
               },
               config
             );
+            //https://dev.odyssey.ninja/odyssey/smoke
+            //https://dev.odyssey.ninja/odyssey/merge07
+            //https://dev2.odyssey.ninja/static/media/FINALFalkor.0a79ac4bc68822f0c77c.jpg
+            //https://assets.babylonjs.com/environments/backgroundGround.png
+            //https://assets.babylonjs.com/environments/environmentSpecular.env
+            //https://dev2.odyssey.ninja/explore/circle
+            //https://dev2.odyssey.ninja/explore/twirl
+            //
+            //https://dev2.odyssey.ninja/api/v4/auth/challenge?wallet=0x89cf1e911CefBace8b0AB3790B358DF7235F6BFf
+            //https://dev2.odyssey.ninja/api/v3/render/asset/d906e0703d2eb1a53e3f703423225945
+            //https://dev2.odyssey.ninja/static/media/test.615984c87fe7eee3672d.hdr
+            //https://dev2.odyssey.ninja/api/v4/users?sort=DESC&limit=1000
+            //https://dev2.odyssey.ninja/api/v4/worlds?sort=DESC&limit=1000
+            //https://dev2.odyssey.ninja/api/v4/objects/7c106050-b727-42f5-957c-5d8fe8af0401/0187a2eb-be7b-73b4-aeb8-3d5332f54642/attributes
             //https://v2.odyssey.ninja/version
             //https://v2.odyssey.ninja/unity/WebGL.data.gz
             //https://statscollector-1.agora.io/events/messages
@@ -305,7 +422,7 @@ function newDialog(cbDone, cbResp, cbReq) {
             //https://dev2.odyssey.ninja/api/v4/objects/e7ccd418-1380-4766-8589-caf7ad45c32f/attributes/sub?plugin_id=f0f0f0f0-0f0f-4ff0-af0f-f0f0f0f0f0f0&attribute_name=name&sub_attribute_key=name
           });
         })
-        .then((resp) => {
+      .then((resp) => {
           cbResp();
 
           console.log('Newsfeed resp', resp.status, resp.statusText);
@@ -314,16 +431,17 @@ function newDialog(cbDone, cbResp, cbReq) {
           console.log('Close dialog');
           cbDone();
 
-          ++finishedThisSecond;
+          ++dialogsEndedThisSecond;
           --currentActiveDialogs;
         });
     })
     .catch((err) => {
+      console.log(err.config.url);
       console.log(err);
       cbDone();
 
       ++errors;
-      ++finishedThisSecond;
+      ++dialogsEndedThisSecond;
       --currentActiveDialogs;
     });
 }
